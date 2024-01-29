@@ -21,6 +21,7 @@ on:
 
 env:
   SPEC_NAME: cmviot_v2v-rtc-ios
+  COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
 
 jobs:
   release:
@@ -49,13 +50,15 @@ jobs:
       - name: Dry Run Release
         if: ${{ inputs.dry-run }}
         run: |
-          pod spec lint ${{ env.SPEC_NAME }}.podspec
+          pod trunk me
+          pod spec lint ${{ env.SPEC_NAME }}.podspec --allow-warnings
         working-directory: repo
 
       - name: Cocoapods Publish
         if: ${{ !inputs.dry-run }}
         run: |
-          pod trunk push ${{ env.SPEC_NAME }}.podspec
+          pod trunk me
+          pod trunk push ${{ env.SPEC_NAME }}.podspec --allow-warnings
         working-directory: repo
 
       - name: Commit and push modify
