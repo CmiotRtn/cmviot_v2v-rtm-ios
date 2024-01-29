@@ -38,7 +38,7 @@ jobs:
         run: |
           sed "s/s.version = \"\(.*\)\"/s.version = \"${{ inputs.version }}\"/g" cmviot_v2v-rtc-ios.podspec > tmp
           mv tmp ${{ env.SPEC_NAME }}.podspec
-          sed "s/:http => \"\(.*\)\"/:http => \"${{ inputs.url }}\"/g" cmviot_v2v-rtc-ios.podspec > tmp
+          sed "s#:http => \"\(.*\)\"#:http => \"${{ inputs.url }}\"#g" cmviot_v2v-rtc-ios.podspec > tmp
           mv tmp ${{ env.SPEC_NAME }}.podspec
         working-directory: repo
 
