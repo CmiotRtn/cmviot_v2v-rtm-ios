@@ -24,7 +24,7 @@ env:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -41,13 +41,18 @@ jobs:
           mv tmp ${{ env.SPEC_NAME }}.podspec
         working-directory: repo
 
+      - name: Setup cocoapods
+        uses: maxim-lobanov/setup-cocoapods@v1
+        with:
+          version: 1.14.0
+
       - name: Dry Run Release
         if: ${{ inputs.dry-run }}
         run: |
           pod spec lint ${{ env.SPEC_NAME }}.podspec
         working-directory: repo
 
-      - name: NPM Publish
+      - name: Cocoapods Publish
         if: ${{ !inputs.dry-run }}
         run: |
           pod trunk push ${{ env.SPEC_NAME }}.podspec
