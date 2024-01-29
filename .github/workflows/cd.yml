@@ -1,0 +1,64 @@
+name: CD
+run-name: Release ${{ inputs.version }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'SDK用来发布的CDN下载链接'
+        required: true
+        type: string
+
+      version:
+        description: 'SDK用来发布的版本号'
+        required: true
+        type: string
+
+      dry-run:
+        description: '正式发布前的预发布测试（cocoapods发布后无法删除）'
+        default: true
+        type: boolean
+
+env:
+  SPEC_NAME: cmviot_v2v-rtc-ios
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.PAT }}
+          path: repo
+
+      - name: Update version and url
+        run: |
+          sed "s/s.version = \"\(.*\)\"/s.version = \"${{ inputs.version }}\"/g" cmviot_v2v-rtc-ios.podspec > tmp
+          mv tmp ${{ env.SPEC_NAME }}.podspec
+          sed "s/:http => \"\(.*\)\"/:http => \"${{ inputs.url }}\"/g" cmviot_v2v-rtc-ios.podspec > tmp
+          mv tmp ${{ env.SPEC_NAME }}.podspec
+        working-directory: repo
+
+      - name: Dry Run Release
+        if: ${{ inputs.dry-run }}
+        run: |
+          pod spec lint ${{ env.SPEC_NAME }}.podspec
+        working-directory: repo
+
+      - name: NPM Publish
+        if: ${{ !inputs.dry-run }}
+        run: |
+          pod trunk push ${{ env.SPEC_NAME }}.podspec
+        working-directory: repo
+
+      - name: Commit and push modify
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Release ${{ inputs.version }} with ${{ inputs.url }}
+          branch: release/${{ inputs.version }}
+          repository: repo
+          tagging_message: ${{ !inputs.dry-run && inputs.version || '' }}
+          create_branch: true
+          push_options: '--force'
