@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name = "cmviot_v2v-rtm-ios"
-    s.version = "4.2.2.234"
+    s.version = "1.0.0"
     s.summary = "cmviot_v2v-rtm-ios"
     s.description = "cmviot_v2v-rtm-ios"
     s.homepage = "https://github.com/CmiotRtn/cmviot_v2v-rtm-ios"
