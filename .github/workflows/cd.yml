@@ -20,7 +20,7 @@ on:
         type: boolean
 
 env:
-  SPEC_NAME: cmviot_v2v-rtc-ios
+  SPEC_NAME: cmviot_v2v-rtm-ios
   COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
 
 jobs:
